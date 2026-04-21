@@ -19,7 +19,6 @@ header {
   padding: 6px;
   background: linear-gradient(90deg,#111,#555);
   font-size: 14px;
-  letter-spacing: 1px;
   overflow: hidden;
   white-space: nowrap;
 }
@@ -66,7 +65,6 @@ input, button {
 input {
   background: #222;
   color: #fff;
-  text-align: left;
 }
 
 button {
@@ -76,72 +74,6 @@ button {
 }
 
 button:hover { background:#ccc; }
-
-.hidden { display:none; }
-
-.req {
-  border-bottom: 1px solid #333;
-  padding: 8px 0;
-}
-
-.small { font-size:12px; opacity:0.7; }
-
-.qr-card { text-align:center; }
-
-.qr-frame {
-  display:inline-block;
-  padding:18px;
-  border-radius:18px;
-  position:relative;
-  box-shadow: 0 0 18px rgba(192,192,192,0.25);
-  border: 2px solid rgba(192,192,192,0.4);
-  background: linear-gradient(145deg,#2a2a2a,#111);
-}
-
-.qr-frame canvas {
-  display:block;
-  margin:0 auto;
-}
-
-.qr-frame:before,
-.qr-frame:after {
-  content:"";
-  position:absolute;
-  width:14px;
-  height:14px;
-  border-radius:50%;
-  background: radial-gradient(circle,#e6e6e6,#9a9a9a);
-  box-shadow:0 0 8px rgba(255,255,255,0.3);
-}
-
-.qr-frame:before { top:6px; left:6px; }
-.qr-frame:after { bottom:6px; right:6px; }
-
-.qr-text { text-align:center; margin-top:15px; }
-
-.spacer { margin-top:25px; }
-
-.bottom-btn {
-  background:#000;
-  color:#fff;
-  border:1px solid #555;
-  margin-top:15px;
-}
-
-.bottom-link {
-  text-align:center;
-  font-size:14px;
-  margin-top:10px;
-}
-
-.bottom-link a { color:silver; }
-
-footer {
-  text-align:center;
-  font-size:12px;
-  opacity:0.7;
-  padding:20px;
-}
 
 .dj-login-btn {
   position:absolute;
@@ -157,8 +89,37 @@ footer {
   width:auto;
 }
 
-.dj-login-btn:hover { background:#ddd; }
+.req {
+  border-bottom: 1px solid #333;
+  padding: 8px 0;
+}
 
+.small { font-size:12px; opacity:0.7; }
+
+.qr-card { text-align:center; }
+
+.qr-frame {
+  display:inline-block;
+  padding:18px;
+  border-radius:18px;
+  box-shadow: 0 0 18px rgba(192,192,192,0.25);
+  border: 2px solid rgba(192,192,192,0.4);
+  background: linear-gradient(145deg,#2a2a2a,#111);
+}
+
+.qr-frame canvas {
+  display:block;
+  margin:0 auto;
+}
+
+.hidden { display:none; }
+
+footer {
+  text-align:center;
+  font-size:12px;
+  opacity:0.7;
+  padding:20px;
+}
 </style>
 </head>
 
@@ -171,10 +132,10 @@ footer {
     <span>- PSP x AKA -</span>
     <span>- SHOW US YOUR MOVES -</span>
     <span>🎧 PSP DJ REQUEST SYSTEM</span>
-    <span>- WELCOME TO 2026 FIELD DAY -</span>
   </div>
 </header>
 
+<!-- AUDIENCE -->
 <div id="audience" class="container" style="position:relative;">
 
   <button class="dj-login-btn" onclick="showLogin()">DJ Login</button>
@@ -196,22 +157,12 @@ footer {
       <canvas id="qr"></canvas>
     </div>
 
-    <p class="qr-text small">Request a Song</p>
-
-    <div class="spacer"></div>
-
-    <button onclick="window.open('https://linktr.ee/prodigalpi','_blank')">
-      Learn more about Prodigal Pi
-    </button>
-
-    <div class="bottom-link">
-      Want to join Psi Sigma Phi Multicultural Fraternity Inc.?<br>
-      Click <a href="https://www.tinyurl.com/ProdigalPiInterest" target="_blank">here</a> and we will be in touch!
-    </div>
+    <p class="small">Request a Song</p>
   </div>
 
 </div>
 
+<!-- DJ PANEL -->
 <div id="dj" class="container hidden">
 
   <div class="card">
@@ -219,12 +170,12 @@ footer {
     <p class="small">Live requests (auto-refresh)</p>
   </div>
 
-  <div class="card" id="requests">Loading requests...</div>
+  <div class="card" id="requests">Loading...</div>
 
 </div>
 
 <footer>
-© 2026 Psi Sigma Phi Multicultural Fraternity, Inc. | Multicultural by birth, not by choice. | Breaking social fears and ignorance.
+© 2026 Psi Sigma Phi Multicultural Fraternity, Inc.
 </footer>
 
 <script>
@@ -277,10 +228,6 @@ function submitRequest() {
   });
 
   alert("Request sent!");
-
-  name.value = "";
-  song.value = "";
-  artist.value = "";
 }
 
 async function loadRequests() {
@@ -289,16 +236,26 @@ async function loadRequests() {
     const text = await res.text();
     const rows = text.split("\n").slice(1);
 
-    document.getElementById("requests").innerHTML = rows.reverse().map(r => {
-      const c = r.split(",");
-      return `<div class='req'><b>${c[2] || ""}</b> - ${c[3] || ""}<br><span class='small'>${c[1] || ""}</span></div>`;
-    }).join("");
+    document.getElementById("requests").innerHTML =
+      rows.reverse().map(r => {
+        const c = r.split(",");
+        return `
+          <div class="req">
+            <b>${c[2] || ""}</b> - ${c[3] || ""}<br>
+            <span class="small">${c[1] || ""}</span>
+          </div>
+        `;
+      }).join("");
+
   } catch (e) {
     document.getElementById("requests").innerHTML = "Failed to load requests";
   }
 }
 
-QRCode.toCanvas(document.getElementById("qr"), location.href);
+QRCode.toCanvas(
+  document.getElementById("qr"),
+  location.href
+);
 
 </script>
 
