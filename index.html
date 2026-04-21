@@ -15,7 +15,7 @@ body {
   color: #fff;
 }
 
-/* ================= HEADER BANNER ================= */
+/* ================= HEADER ================= */
 header {
   background: linear-gradient(90deg,#111,#555);
   overflow: hidden;
@@ -31,7 +31,7 @@ header {
 
 .marquee span {
   white-space: nowrap;
-  margin: 0 90px; /* 🔥 MORE SPACE BETWEEN ITEMS */
+  margin: 0 60px;
   font-size: 14px;
 }
 
@@ -111,11 +111,6 @@ button:hover { background:#ccc; }
   background: linear-gradient(145deg,#2a2a2a,#111);
 }
 
-.qr-frame canvas {
-  display:block;
-  margin:0 auto;
-}
-
 /* ================= FOOTER ================= */
 footer {
   text-align:center;
@@ -125,7 +120,6 @@ footer {
 }
 
 .hidden { display:none; }
-
 </style>
 </head>
 
@@ -134,13 +128,12 @@ footer {
 <!-- ================= BANNER ================= -->
 <header>
   <div class="marquee">
-    <span>🎧 PSP DJ REQUEST SYSTEM</span>
+    <span>🎧 PSP DJ REQUEST SYSTEM 🎧</span>
     <span>— WELCOME TO 2026 FIELD DAY —</span>
     <span>— PSP x AKA —</span>
     <span>— SHOW US YOUR MOVES —</span>
 
-    <!-- DUPLICATED FOR SMOOTH LOOP -->
-    <span>🎧 PSP DJ REQUEST SYSTEM</span>
+    <span>🎧 PSP DJ REQUEST SYSTEM 🎧</span>
     <span>— WELCOME TO 2026 FIELD DAY —</span>
     <span>— PSP x AKA —</span>
     <span>— SHOW US YOUR MOVES —</span>
@@ -170,8 +163,26 @@ footer {
     </div>
 
     <p class="small">Request a Song</p>
-  </div>
 
+    <!-- 🔥 PRODIGAL PI BUTTON RESTORED -->
+    <div style="margin-top:25px;">
+      <button onclick="window.open('https://linktr.ee/prodigalpi','_blank')"
+        style="background:#000;color:#fff;border:1px solid #666;">
+        Prodigal Pi
+      </button>
+    </div>
+
+    <!-- 🔥 JOIN TEXT RESTORED -->
+    <p class="small" style="margin-top:15px;">
+      Want to join Psi Sigma Phi Multicultural Fraternity, Inc.?
+    </p>
+
+    <p class="small">
+      Click <a href="https://www.tinyurl.com/ProdigalPiInterest"
+      target="_blank" style="color:silver;">here</a> and we will be in touch!
+    </p>
+
+  </div>
 </div>
 
 <!-- ================= DJ PANEL ================= -->
@@ -180,10 +191,13 @@ footer {
   <div class="card">
     <h2>DJ CONTROL PANEL</h2>
     <p class="small">Live requests (auto-refresh)</p>
+
+    <button onclick="goBack()" style="background:silver;color:black;width:auto;">
+      ⬅ Back to Request Page
+    </button>
   </div>
 
   <div class="card" id="requests">Loading...</div>
-
 </div>
 
 <footer>
@@ -224,6 +238,11 @@ function showLogin() {
   }
 }
 
+/* BACK BUTTON */
+function goBack() {
+  window.location.href = window.location.pathname;
+}
+
 /* SUBMIT */
 function submitRequest() {
   const name = document.getElementById("name");
@@ -253,23 +272,20 @@ async function loadRequests() {
     const rows = text.split(/\r?\n/).filter(r => r.trim() !== "");
     const dataRows = rows.slice(1);
 
-    const html = dataRows.reverse().map(row => {
-      const c = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-
-      return `
-        <div class="req">
-          <b>${c[2] || ""}</b> - ${c[3] || ""}<br>
-          <span class="small">${c[1] || ""}</span>
-        </div>
-      `;
-    }).join("");
-
     document.getElementById("requests").innerHTML =
-      html || "No requests yet";
+      dataRows.reverse().map(row => {
+        const c = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+
+        return `
+          <div class="req">
+            <b>${c[2] || ""}</b> - ${c[3] || ""}<br>
+            <span class="small">${c[1] || ""}</span>
+          </div>
+        `;
+      }).join("") || "No requests yet";
 
   } catch (e) {
-    document.getElementById("requests").innerHTML =
-      "Error loading requests";
+    document.getElementById("requests").innerHTML = "Error loading requests";
   }
 }
 
