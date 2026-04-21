@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>DJ Request System</title>
+<title>PSP DJ Song Request System</title>
 
 <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 
@@ -36,10 +36,11 @@ header {
 
 input, button {
   width: 100%;
-  padding: 10px;
-  margin: 5px 0;
+  padding: 12px;
+  margin: 6px 0;
   border: none;
   border-radius: 6px;
+  font-size: 16px;
 }
 
 input {
@@ -51,15 +52,14 @@ button {
   background: silver;
   color: #000;
   cursor: pointer;
+  font-size: 16px;
 }
 
 button:hover {
   background: #ccc;
 }
 
-.hidden {
-  display: none;
-}
+.hidden { display: none; }
 
 .req {
   border-bottom: 1px solid #333;
@@ -70,35 +70,78 @@ button:hover {
   font-size: 12px;
   opacity: 0.7;
 }
+
+/* CENTER QR + TEXT */
+.qr-card {
+  text-align: center;
+}
+
+.qr-card canvas {
+  display: block;
+  margin: 0 auto;
+}
+
+.qr-text {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.bottom-btn {
+  background: #000;
+  color: #fff;
+  border: 1px solid #555;
+  font-size: 16px;
+}
+
+.bottom-link {
+  text-align: center;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.bottom-link a {
+  color: silver;
+  text-decoration: underline;
+}
 </style>
 </head>
 
 <body>
 
-<header>🎧 DJ REQUEST SYSTEM</header>
+<header>🎧 PSP DJ REQUEST SYSTEM</header>
 
 <!-- ================= AUDIENCE ================= -->
 <div id="audience" class="container">
+
   <div class="card">
     <h2>📱 Request a Song</h2>
     <input id="name" placeholder="Your Name" />
-    <input id="song" placeholder="Song" />
-    <input id="artist" placeholder="Artist" />
+    <input id="song" placeholder="Song Name" />
+    <input id="artist" placeholder="Artist Name" />
     <button onclick="submitRequest()">Send Request</button>
   </div>
 
-  <div class="card">
-    <h3>Scan QR to Open</h3>
+  <div class="card qr-card">
+    <h3>Share this QR with the crowd</h3>
     <canvas id="qr"></canvas>
-    <p class="small">Share this with the crowd</p>
+    <p class="qr-text small">Request a Song</p>
+
+    <button class="bottom-btn" onclick="window.open('https://linktr.ee/prodigalpi','_blank')">
+      Prodigal Pi
+    </button>
+
+    <div class="bottom-link">
+      Want to join Psi Sigma Phi? Click <a href="https://www.tinyurl.com/ProdigalPiInterest" target="_blank">here</a> and we will be in touch!
+    </div>
   </div>
+
 </div>
 
 <!-- ================= DJ PANEL ================= -->
 <div id="dj" class="container hidden">
 
   <div class="card">
-    <h2>🎛 DJ CONTROL PANEL</h2>
+    <h2>DJ CONTROL PANEL</h2>
     <p class="small">Live requests (auto-refresh)</p>
   </div>
 
@@ -115,21 +158,17 @@ button:hover {
 
 <script>
 
-// ================= CONFIG =================
 const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSd4bfk_BerdFJTVVjTnk-37HiuclYg3ZafMrzFrBzayk1Ka_A/formResponse";
 
 const ENTRY_NAME = "entry.2025816728";
 const ENTRY_SONG = "entry.217433513";
 const ENTRY_ARTIST = "entry.414315518";
 
-// YOUR SHEETS CSV LINK
 const SHEET_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRnd93SzUSWVaYgaZMtDTu1Zc8GknVU_jHTXd7K6v5EDOrK_VVzJ21Y-8HQxj7wivGSZpmncdYrqS8u/pub?gid=1860627752&single=true&output=csv";
 
-// ADMIN LOGIN
 const ADMIN_USERNAME = "phiman";
 const PASSWORD = "psp1990";
 
-// ================= MODE SWITCH =================
 const isDJ = new URLSearchParams(location.search).get("dj") === "1";
 
 if (isDJ) {
@@ -137,7 +176,6 @@ if (isDJ) {
   document.getElementById("dj").classList.remove("hidden");
 }
 
-// ================= SUBMIT REQUEST =================
 function submitRequest() {
   const name = document.getElementById("name").value;
   const song = document.getElementById("song").value;
@@ -146,9 +184,7 @@ function submitRequest() {
   fetch(FORM_URL, {
     method: "POST",
     mode: "no-cors",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded"
-    },
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({
       [ENTRY_NAME]: name,
       [ENTRY_SONG]: song,
@@ -163,7 +199,6 @@ function submitRequest() {
   document.getElementById("artist").value = "";
 }
 
-// ================= LOAD DJ REQUESTS =================
 async function loadRequests() {
   if (!isDJ) return;
 
@@ -172,26 +207,19 @@ async function loadRequests() {
     const text = await res.text();
     const rows = text.split("\n").slice(1);
 
-    document.getElementById("requests").innerHTML =
-      rows.reverse().map(r => {
-        const c = r.split(",");
-        return `
-          <div class="req">
-            <b>${c[2] || ""}</b> - ${c[3] || ""}
-            <br><span class="small">${c[1] || ""}</span>
-          </div>
-        `;
-      }).join("");
+    document.getElementById("requests").innerHTML = rows.reverse().map(r => {
+      const c = r.split(",");
+      return `<div class='req'><b>${c[2] || ""}</b> - ${c[3] || ""}<br><span class='small'>${c[1] || ""}</span></div>`;
+    }).join("");
 
-  } catch (err) {
-    console.log(err);
+  } catch (e) {
+    console.log(e);
   }
 }
 
 setInterval(loadRequests, 5000);
 loadRequests();
 
-// ================= LOGIN =================
 function login() {
   const user = document.getElementById("user").value;
   const pass = document.getElementById("pass").value;
@@ -203,7 +231,6 @@ function login() {
   }
 }
 
-// ================= QR CODE =================
 QRCode.toCanvas(
   document.getElementById("qr"),
   location.origin + location.pathname
