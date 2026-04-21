@@ -15,25 +15,32 @@ body {
   color: #fff;
 }
 
+/* ================= HEADER BANNER ================= */
 header {
-  padding: 6px;
   background: linear-gradient(90deg,#111,#555);
-  font-size: 14px;
   overflow: hidden;
   white-space: nowrap;
+  padding: 8px 0;
 }
 
 .marquee {
-  display: inline-block;
+  display: flex;
+  width: max-content;
+  animation: scroll 45s linear infinite;
+}
+
+.marquee span {
   white-space: nowrap;
-  animation: scroll 30s linear infinite;
+  margin: 0 90px; /* 🔥 MORE SPACE BETWEEN ITEMS */
+  font-size: 14px;
 }
 
 @keyframes scroll {
-  0% { transform: translateX(0%); }
+  0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
 
+/* ================= LAYOUT ================= */
 .container { padding: 20px; }
 
 .card {
@@ -92,6 +99,7 @@ button:hover { background:#ccc; }
 
 .small { font-size:12px; opacity:0.7; }
 
+/* ================= QR ================= */
 .qr-card { text-align:center; }
 
 .qr-frame {
@@ -108,26 +116,38 @@ button:hover { background:#ccc; }
   margin:0 auto;
 }
 
-.hidden { display:none; }
-
+/* ================= FOOTER ================= */
 footer {
   text-align:center;
   font-size:12px;
   opacity:0.7;
   padding:20px;
 }
+
+.hidden { display:none; }
+
 </style>
 </head>
 
 <body>
 
+<!-- ================= BANNER ================= -->
 <header>
   <div class="marquee">
-    🎧 PSP DJ REQUEST SYSTEM — WELCOME TO 2026 FIELD DAY — PSP x AKA — SHOW US YOUR MOVES — 🎧
+    <span>🎧 PSP DJ REQUEST SYSTEM</span>
+    <span>— WELCOME TO 2026 FIELD DAY —</span>
+    <span>— PSP x AKA —</span>
+    <span>— SHOW US YOUR MOVES —</span>
+
+    <!-- DUPLICATED FOR SMOOTH LOOP -->
+    <span>🎧 PSP DJ REQUEST SYSTEM</span>
+    <span>— WELCOME TO 2026 FIELD DAY —</span>
+    <span>— PSP x AKA —</span>
+    <span>— SHOW US YOUR MOVES —</span>
   </div>
 </header>
 
-<!-- AUDIENCE -->
+<!-- ================= AUDIENCE ================= -->
 <div id="audience" class="container" style="position:relative;">
 
   <button class="dj-login-btn" onclick="showLogin()">DJ Login</button>
@@ -154,7 +174,7 @@ footer {
 
 </div>
 
-<!-- DJ PANEL -->
+<!-- ================= DJ PANEL ================= -->
 <div id="dj" class="container hidden">
 
   <div class="card">
@@ -213,9 +233,7 @@ function submitRequest() {
   fetch(FORM_URL, {
     method: "POST",
     mode: "no-cors",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded"
-    },
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({
       [ENTRY_NAME]: name.value,
       [ENTRY_SONG]: song.value,
@@ -226,19 +244,11 @@ function submitRequest() {
   alert("Request sent!");
 }
 
-/* 🔥 FIXED LIVE REQUEST LOADER (NO CACHE + NO GHOST DATA) */
+/* LOAD REQUESTS */
 async function loadRequests() {
   try {
-    const res = await fetch(SHEET_CSV, {
-      cache: "no-store"   // 🔥 THIS FIXES YOUR ISSUE
-    });
-
+    const res = await fetch(SHEET_CSV, { cache: "no-store" });
     const text = await res.text();
-
-    if (!text || text.trim() === "") {
-      document.getElementById("requests").innerHTML = "No requests yet";
-      return;
-    }
 
     const rows = text.split(/\r?\n/).filter(r => r.trim() !== "");
     const dataRows = rows.slice(1);
@@ -246,22 +256,20 @@ async function loadRequests() {
     const html = dataRows.reverse().map(row => {
       const c = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
 
-      const name = c[1] || "Unknown";
-      const song = c[2] || "No Song";
-      const artist = c[3] || "No Artist";
-
       return `
         <div class="req">
-          <b>${song}</b> - ${artist}<br>
-          <span class="small">${name}</span>
+          <b>${c[2] || ""}</b> - ${c[3] || ""}<br>
+          <span class="small">${c[1] || ""}</span>
         </div>
       `;
     }).join("");
 
-    document.getElementById("requests").innerHTML = html;
+    document.getElementById("requests").innerHTML =
+      html || "No requests yet";
 
   } catch (e) {
-    document.getElementById("requests").innerHTML = "Error loading requests";
+    document.getElementById("requests").innerHTML =
+      "Error loading requests";
   }
 }
 
