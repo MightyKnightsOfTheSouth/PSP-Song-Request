@@ -22,7 +22,6 @@ header {
   letter-spacing: 1px;
   overflow: hidden;
   white-space: nowrap;
-  position: relative;
 }
 
 .marquee {
@@ -74,7 +73,6 @@ button {
   background: silver;
   color: #000;
   cursor: pointer;
-  font-size: 16px;
 }
 
 button:hover { background:#ccc; }
@@ -97,6 +95,7 @@ button:hover { background:#ccc; }
   position:relative;
   box-shadow: 0 0 18px rgba(192,192,192,0.25);
   border: 2px solid rgba(192,192,192,0.4);
+  background: linear-gradient(145deg,#2a2a2a,#111);
 }
 
 .qr-frame canvas {
@@ -126,7 +125,6 @@ button:hover { background:#ccc; }
   background:#000;
   color:#fff;
   border:1px solid #555;
-  font-size:16px;
   margin-top:15px;
 }
 
@@ -145,7 +143,6 @@ footer {
   padding:20px;
 }
 
-/* DJ LOGIN BUTTON UPDATED */
 .dj-login-btn {
   position:absolute;
   top:10px;
@@ -170,11 +167,11 @@ footer {
 <header>
   <div class="marquee">
     <span>🎧 PSP DJ REQUEST SYSTEM</span>
-    <span> - WELCOME TO 2026 FIELD DAY - </span>
-    <span> - PSP x AKA - </span>
-    <span> - SHOW US YOUR MOVES! - </span>
-    <span> 🎧 PSP DJ REQUEST SYSTEM</span>
-    <span> - WELCOME TO 2026 FIELD DAY - </span>
+    <span>- WELCOME TO 2026 FIELD DAY -</span>
+    <span>- PSP x AKA -</span>
+    <span>- SHOW US YOUR MOVES -</span>
+    <span>🎧 PSP DJ REQUEST SYSTEM</span>
+    <span>- WELCOME TO 2026 FIELD DAY -</span>
   </div>
 </header>
 
@@ -184,9 +181,11 @@ footer {
 
   <div class="card form-box">
     <h2 style="text-align:center;">📱 Request a Song</h2>
+
     <input id="name" placeholder="Your Name" />
     <input id="song" placeholder="Song Name" />
     <input id="artist" placeholder="Artist Name" />
+
     <button onclick="submitRequest()">Send Request</button>
   </div>
 
@@ -201,7 +200,7 @@ footer {
 
     <div class="spacer"></div>
 
-    <button class="bottom-btn" onclick="window.open('https://linktr.ee/prodigalpi','_blank')">
+    <button onclick="window.open('https://linktr.ee/prodigalpi','_blank')">
       Learn more about Prodigal Pi
     </button>
 
@@ -214,11 +213,14 @@ footer {
 </div>
 
 <div id="dj" class="container hidden">
+
   <div class="card">
     <h2>DJ CONTROL PANEL</h2>
     <p class="small">Live requests (auto-refresh)</p>
   </div>
-  <div class="card" id="requests"></div>
+
+  <div class="card" id="requests">Loading requests...</div>
+
 </div>
 
 <footer>
@@ -226,33 +228,78 @@ footer {
 </footer>
 
 <script>
-const FORM_URL="https://docs.google.com/forms/d/e/1FAIpQLSd4bfk_BerdFJTVVjTnk-37HiuclYg3ZafMrzFrBzayk1Ka_A/formResponse";
-const ENTRY_NAME="entry.2025816728";
-const ENTRY_SONG="entry.217433513";
-const ENTRY_ARTIST="entry.414315518";
-const SHEET_CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vRnd93SzUSWVaYgaZMtDTu1Zc8GknVU_jHTXd7K6v5EDOrK_VVzJ21Y-8HQxj7wivGSZpmncdYrqS8u/pub?gid=1860627752&single=true&output=csv";
-const ADMIN_USERNAME="phiman";
-const PASSWORD="psp1990";
 
-const isDJ=new URLSearchParams(location.search).get("dj")==="1";
-if(isDJ){
+const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSd4bfk_BerdFJTVVjTnk-37HiuclYg3ZafMrzFrBzayk1Ka_A/formResponse";
+
+const ENTRY_NAME = "entry.2025816728";
+const ENTRY_SONG = "entry.217433513";
+const ENTRY_ARTIST = "entry.414315518";
+
+const SHEET_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRnd93SzUSWVaYgaZMtDTu1Zc8GknVU_jHTXd7K6v5EDOrK_VVzJ21Y-8HQxj7wivGSZpmncdYrqS8u/pub?gid=1860627752&single=true&output=csv";
+
+const ADMIN_USERNAME = "phiman";
+const PASSWORD = "psp1990";
+
+const isDJ = new URLSearchParams(location.search).get("dj") === "1";
+
+if (isDJ) {
   document.getElementById("audience").classList.add("hidden");
   document.getElementById("dj").classList.remove("hidden");
+  loadRequests();
+  setInterval(loadRequests, 5000);
 }
 
-function showLogin(){
-  const u=prompt("Username");
-  const p=prompt("Password");
-  if(u===ADMIN_USERNAME && p===PASSWORD){ location.href="?dj=1"; }
-  else alert("Wrong credentials");
+function showLogin() {
+  const u = prompt("Username");
+  const p = prompt("Password");
+
+  if (u === ADMIN_USERNAME && p === PASSWORD) {
+    location.href = "?dj=1";
+  } else {
+    alert("Wrong credentials");
+  }
 }
 
-function submitRequest(){
-  fetch(FORM_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:new URLSearchParams({[ENTRY_NAME]:name.value,[ENTRY_SONG]:song.value,[ENTRY_ARTIST]:artist.value})});
+function submitRequest() {
+  const name = document.getElementById("name");
+  const song = document.getElementById("song");
+  const artist = document.getElementById("artist");
+
+  fetch(FORM_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      [ENTRY_NAME]: name.value,
+      [ENTRY_SONG]: song.value,
+      [ENTRY_ARTIST]: artist.value
+    })
+  });
+
   alert("Request sent!");
+
+  name.value = "";
+  song.value = "";
+  artist.value = "";
 }
 
-QRCode.toCanvas(document.getElementById("qr"),location.href);
+async function loadRequests() {
+  try {
+    const res = await fetch(SHEET_CSV);
+    const text = await res.text();
+    const rows = text.split("\n").slice(1);
+
+    document.getElementById("requests").innerHTML = rows.reverse().map(r => {
+      const c = r.split(",");
+      return `<div class='req'><b>${c[2] || ""}</b> - ${c[3] || ""}<br><span class='small'>${c[1] || ""}</span></div>`;
+    }).join("");
+  } catch (e) {
+    document.getElementById("requests").innerHTML = "Failed to load requests";
+  }
+}
+
+QRCode.toCanvas(document.getElementById("qr"), location.href);
+
 </script>
 
 </body>
