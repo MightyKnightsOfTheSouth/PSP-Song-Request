@@ -164,15 +164,13 @@ footer {
 
     <p class="small">Request a Song</p>
 
-    <!-- 🔥 PRODIGAL PI BUTTON RESTORED -->
     <div style="margin-top:25px;">
       <button onclick="window.open('https://linktr.ee/prodigalpi','_blank')"
         style="background:#000;color:#fff;border:1px solid #666;">
-        Prodigal Pi
+        Learn more about the Prodigal Pi Chapter
       </button>
     </div>
 
-    <!-- 🔥 JOIN TEXT RESTORED -->
     <p class="small" style="margin-top:15px;">
       Want to join Psi Sigma Phi Multicultural Fraternity, Inc.?
     </p>
@@ -201,7 +199,7 @@ footer {
 </div>
 
 <footer>
-© 2026 Psi Sigma Phi Multicultural Fraternity, Inc.
+© 2026 Psi Sigma Phi Multicultural Fraternity, Inc. | Multicultural by birth, not by choice. | Breaking social fears and ignorance.
 </footer>
 
 <script>
@@ -226,19 +224,27 @@ if (isDJ) {
   setInterval(loadRequests, 5000);
 }
 
-/* LOGIN */
+/* LOGIN (FIXED + CASE INSENSITIVE) */
 function showLogin() {
   const u = prompt("Username");
   const p = prompt("Password");
 
-  if (u === ADMIN_USERNAME && p === PASSWORD) {
+  if (!u || !p) return;
+
+  const inputUser = u.toLowerCase().trim();
+  const inputPass = p.toLowerCase().trim();
+
+  const correctUser = ADMIN_USERNAME.toLowerCase();
+  const correctPass = PASSWORD.toLowerCase();
+
+  if (inputUser === correctUser && inputPass === correctPass) {
     location.href = "?dj=1";
   } else {
     alert("Wrong credentials");
   }
 }
 
-/* BACK BUTTON */
+/* BACK */
 function goBack() {
   window.location.href = window.location.pathname;
 }
