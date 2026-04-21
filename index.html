@@ -120,13 +120,20 @@ footer {
 }
 
 .hidden { display:none; }
+
 </style>
 </head>
 
 <body>
 
+<!-- ================= BANNER ================= -->
 <header>
   <div class="marquee">
+    <span>🎧 PSP DJ REQUEST SYSTEM 🎧</span>
+    <span>— WELCOME TO 2026 FIELD DAY —</span>
+    <span>— PSP x AKA —</span>
+    <span>— SHOW US YOUR MOVES —</span>
+
     <span>🎧 PSP DJ REQUEST SYSTEM 🎧</span>
     <span>— WELCOME TO 2026 FIELD DAY —</span>
     <span>— PSP x AKA —</span>
@@ -134,7 +141,10 @@ footer {
   </div>
 </header>
 
-<div id="audience" class="container">
+<!-- ================= AUDIENCE ================= -->
+<div id="audience" class="container" style="position:relative;">
+
+  <button class="dj-login-btn" onclick="showLogin()">DJ Login</button>
 
   <div class="card form-box">
     <h2 style="text-align:center;">📱 Request a Song</h2>
@@ -154,22 +164,46 @@ footer {
     </div>
 
     <p class="small">Request a Song</p>
-  </div>
 
+    <!-- ✅ PRODIGAL PI BUTTON RESTORED -->
+    <div style="margin-top:25px;">
+      <button onclick="window.open('https://linktr.ee/prodigalpi','_blank')"
+        style="background:#000;color:#fff;border:1px solid #666;">
+        Learn more about the Prodigal Pi Chapter
+      </button>
+    </div>
+
+    <!-- ✅ JOIN TEXT RESTORED (2 LINES) -->
+    <p class="small" style="margin-top:15px;">
+      Want to join Psi Sigma Phi Multicultural Fraternity, Inc.?
+    </p>
+
+    <p class="small">
+      Click <a href="https://www.tinyurl.com/ProdigalPiInterest"
+      target="_blank" style="color:silver;">here</a> and we will be in touch!
+    </p>
+
+  </div>
 </div>
 
+<!-- ================= DJ PANEL ================= -->
 <div id="dj" class="container hidden">
 
   <div class="card">
     <h2>DJ CONTROL PANEL</h2>
     <p class="small">Live requests (auto-refresh)</p>
+
+    <!-- ✅ BACK BUTTON RESTORED -->
+    <button onclick="goBack()" style="background:silver;color:black;width:auto;">
+      ⬅ Back to Request Page
+    </button>
   </div>
 
   <div class="card" id="requests">Loading...</div>
 </div>
 
 <footer>
-© 2026 PSP DJ System
+© 2026 Psi Sigma Phi Multicultural Fraternity, Inc.
 </footer>
 
 <script>
@@ -182,6 +216,9 @@ const ENTRY_ARTIST = "entry.414315518";
 
 const SHEET_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRnd93SzUSWVaYgaZMtDTu1Zc8GknVU_jHTXd7K6v5EDOrK_VVzJ21Y-8HQxj7wivGSZpmncdYrqS8u/pub?gid=1860627752&single=true&output=csv";
 
+const ADMIN_USERNAME = "phiman";
+const PASSWORD = "psp1990";
+
 const isDJ = new URLSearchParams(location.search).get("dj") === "1";
 
 if (isDJ) {
@@ -189,6 +226,28 @@ if (isDJ) {
   document.getElementById("dj").classList.remove("hidden");
   loadRequests();
   setInterval(loadRequests, 5000);
+}
+
+/* LOGIN */
+function showLogin() {
+  const u = prompt("Username");
+  const p = prompt("Password");
+
+  if (!u || !p) return;
+
+  if (
+    u.toLowerCase().trim() === ADMIN_USERNAME.toLowerCase() &&
+    p.toLowerCase().trim() === PASSWORD.toLowerCase()
+  ) {
+    location.href = "?dj=1";
+  } else {
+    alert("Wrong credentials");
+  }
+}
+
+/* BACK */
+function goBack() {
+  window.location.href = window.location.pathname;
 }
 
 /* SUBMIT */
@@ -210,7 +269,7 @@ function submitRequest() {
   alert("Request sent!");
 }
 
-/* FIXED STABLE LOADER */
+/* LOAD REQUESTS (FIXED STABLE VERSION) */
 async function loadRequests() {
   try {
     const res = await fetch(SHEET_CSV + "&t=" + Date.now(), {
@@ -222,15 +281,12 @@ async function loadRequests() {
     const lines = text
       .split(/\r?\n/)
       .map(l => l.trim())
-      .filter(l => l.length > 0);
-
-    if (lines.length <= 1) return;
+      .filter(l => l);
 
     const dataRows = lines.slice(1);
 
-    const html = dataRows
-      .filter(r => r.includes(",")) // prevent broken rows
-      .map(row => {
+    document.getElementById("requests").innerHTML =
+      dataRows.map(row => {
         const c = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
 
         return `
@@ -239,15 +295,10 @@ async function loadRequests() {
             <span class="small">${c[1] || ""}</span>
           </div>
         `;
-      })
-      .join("");
-
-    document.getElementById("requests").innerHTML =
-      html || "No requests yet";
+      }).join("") || "No requests yet";
 
   } catch (e) {
-    document.getElementById("requests").innerHTML =
-      "Error loading requests";
+    document.getElementById("requests").innerHTML = "Error loading requests";
   }
 }
 
