@@ -50,7 +50,7 @@ header {
 }
 
 .form-box {
-  max-width: 420px;
+  max-width: 380px;
   margin: 0 auto;
 }
 
@@ -61,6 +61,7 @@ input, button {
   border: none;
   border-radius: 6px;
   font-size: 16px;
+  box-sizing: border-box;
 }
 
 input {
@@ -87,11 +88,8 @@ button:hover { background:#ccc; }
 
 .small { font-size:12px; opacity:0.7; }
 
-.qr-card {
-  text-align:center;
-}
+.qr-card { text-align:center; }
 
-/* 🎧 QR DJ FRAME */
 .qr-frame {
   display:inline-block;
   padding:18px;
@@ -106,7 +104,6 @@ button:hover { background:#ccc; }
   margin:0 auto;
 }
 
-/* silver corner eyes */
 .qr-frame:before,
 .qr-frame:after {
   content:"";
@@ -121,10 +118,7 @@ button:hover { background:#ccc; }
 .qr-frame:before { top:6px; left:6px; }
 .qr-frame:after { bottom:6px; right:6px; }
 
-.qr-text {
-  text-align:center;
-  margin-top:15px;
-}
+.qr-text { text-align:center; margin-top:15px; }
 
 .spacer { margin-top:25px; }
 
@@ -151,13 +145,13 @@ footer {
   padding:20px;
 }
 
-/* DJ LOGIN BUTTON MOVED RIGHT + SMALLER */
+/* DJ LOGIN BUTTON UPDATED */
 .dj-login-btn {
   position:absolute;
   top:10px;
   right:10px;
-  background:#0b3d0b;
-  color:#ffb6c1;
+  background:silver;
+  color:#000;
   padding:5px 8px;
   border-radius:6px;
   font-size:11px;
@@ -166,7 +160,7 @@ footer {
   width:auto;
 }
 
-.dj-login-btn:hover { background:#145214; }
+.dj-login-btn:hover { background:#ddd; }
 
 </style>
 </head>
@@ -247,7 +241,6 @@ if(isDJ){
 }
 
 function showLogin(){
-  location.href="#login";
   const u=prompt("Username");
   const p=prompt("Password");
   if(u===ADMIN_USERNAME && p===PASSWORD){ location.href="?dj=1"; }
