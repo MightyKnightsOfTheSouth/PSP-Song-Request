@@ -126,7 +126,6 @@ footer {
 
 <body>
 
-<!-- ================= BANNER ================= -->
 <header>
   <div class="marquee">
     <span>🎧 PSP DJ REQUEST SYSTEM 🎧</span>
@@ -165,7 +164,6 @@ footer {
 
     <p class="small">Request a Song</p>
 
-    <!-- ✅ PRODIGAL PI BUTTON RESTORED -->
     <div style="margin-top:25px;">
       <button onclick="window.open('https://linktr.ee/prodigalpi','_blank')"
         style="background:#000;color:#fff;border:1px solid #666;">
@@ -173,7 +171,6 @@ footer {
       </button>
     </div>
 
-    <!-- ✅ JOIN TEXT RESTORED (2 LINES) -->
     <p class="small" style="margin-top:15px;">
       Want to join Psi Sigma Phi Multicultural Fraternity, Inc.?
     </p>
@@ -193,7 +190,6 @@ footer {
     <h2>DJ CONTROL PANEL</h2>
     <p class="small">Live requests (auto-refresh)</p>
 
-    <!-- ✅ BACK BUTTON RESTORED -->
     <button onclick="goBack()" style="background:silver;color:black;width:auto;">
       ⬅ Back to Request Page
     </button>
@@ -220,6 +216,9 @@ const ADMIN_USERNAME = "phiman";
 const PASSWORD = "psp1990";
 
 const isDJ = new URLSearchParams(location.search).get("dj") === "1";
+
+/* ===== LEVEL 2 STABILITY ENGINE ===== */
+let knownRequests = new Set();
 
 if (isDJ) {
   document.getElementById("audience").classList.add("hidden");
@@ -269,7 +268,7 @@ function submitRequest() {
   alert("Request sent!");
 }
 
-/* LOAD REQUESTS (FIXED STABLE VERSION) */
+/* ===== LEVEL 2 FIXED LOADER ===== */
 async function loadRequests() {
   try {
     const res = await fetch(SHEET_CSV + "&t=" + Date.now(), {
@@ -285,20 +284,34 @@ async function loadRequests() {
 
     const dataRows = lines.slice(1);
 
-    document.getElementById("requests").innerHTML =
-      dataRows.map(row => {
-        const c = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+    let newHTML = "";
+    let newSet = new Set();
 
-        return `
-          <div class="req">
-            <b>${c[2] || ""}</b> - ${c[3] || ""}<br>
-            <span class="small">${c[1] || ""}</span>
-          </div>
-        `;
-      }).join("") || "No requests yet";
+    dataRows.forEach(row => {
+      const c = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+
+      const id = (c[1] + c[2] + c[3]).toLowerCase().replace(/\s/g, "");
+
+      newSet.add(id);
+
+      newHTML += `
+        <div class="req">
+          <b>${c[2] || ""}</b> - ${c[3] || ""}<br>
+          <span class="small">${c[1] || ""}</span>
+        </div>
+      `;
+    });
+
+    if (JSON.stringify([...newSet]) !== JSON.stringify([...knownRequests])) {
+      document.getElementById("requests").innerHTML =
+        newHTML || "No requests yet";
+
+      knownRequests = newSet;
+    }
 
   } catch (e) {
-    document.getElementById("requests").innerHTML = "Error loading requests";
+    document.getElementById("requests").innerHTML =
+      "Error loading requests";
   }
 }
 
@@ -312,3 +325,5 @@ QRCode.toCanvas(
 
 </body>
 </html>
+
+
