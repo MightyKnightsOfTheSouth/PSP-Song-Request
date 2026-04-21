@@ -1,22 +1,215 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Field Day Song Requests</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DJ Request System</title>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #000;
+  color: #fff;
+}
+
+header {
+  padding: 15px;
+  text-align: center;
+  background: linear-gradient(90deg,#111,#555);
+  font-size: 20px;
+  letter-spacing: 1px;
+}
+
+.container {
+  padding: 20px;
+}
+
+.card {
+  background: #111;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+input, button {
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0;
+  border: none;
+  border-radius: 6px;
+}
+
+input {
+  background: #222;
+  color: #fff;
+}
+
+button {
+  background: silver;
+  color: #000;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #ccc;
+}
+
+.hidden {
+  display: none;
+}
+
+.req {
+  border-bottom: 1px solid #333;
+  padding: 8px 0;
+}
+
+.small {
+  font-size: 12px;
+  opacity: 0.7;
+}
+</style>
 </head>
+
 <body>
 
-  <h1>🎧 Request a Song</h1>
+<header>🎧 DJ REQUEST SYSTEM</header>
 
-  <form id="form">
-    <input type="text" id="name" placeholder="Your Name" required>
-    <input type="text" id="song" placeholder="Song Title" required>
-    <input type="text" id="artist" placeholder="Artist" required>
-    <button type="submit">Send</button>
-  </form>
+<!-- ================= AUDIENCE ================= -->
+<div id="audience" class="container">
+  <div class="card">
+    <h2>📱 Request a Song</h2>
+    <input id="name" placeholder="Your Name" />
+    <input id="song" placeholder="Song" />
+    <input id="artist" placeholder="Artist" />
+    <button onclick="submitRequest()">Send Request</button>
+  </div>
 
-  <p id="status"></p>
+  <div class="card">
+    <h3>Scan QR to Open</h3>
+    <canvas id="qr"></canvas>
+    <p class="small">Share this with the crowd</p>
+  </div>
+</div>
 
-  <script src="script.js"></script>
+<!-- ================= DJ PANEL ================= -->
+<div id="dj" class="container hidden">
+
+  <div class="card">
+    <h2>🎛 DJ CONTROL PANEL</h2>
+    <p class="small">Live requests (auto-refresh)</p>
+  </div>
+
+  <div class="card" id="requests"></div>
+
+  <div class="card">
+    <h3>🔐 Admin Login</h3>
+    <input id="user" placeholder="Username" />
+    <input id="pass" type="password" placeholder="Password" />
+    <button onclick="login()">Login</button>
+  </div>
+
+</div>
+
+<script>
+
+// ================= CONFIG =================
+const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSd4bfk_BerdFJTVVjTnk-37HiuclYg3ZafMrzFrBzayk1Ka_A/formResponse";
+
+const ENTRY_NAME = "entry.2025816728";
+const ENTRY_SONG = "entry.217433513";
+const ENTRY_ARTIST = "entry.414315518";
+
+// YOUR SHEETS CSV LINK
+const SHEET_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRnd93SzUSWVaYgaZMtDTu1Zc8GknVU_jHTXd7K6v5EDOrK_VVzJ21Y-8HQxj7wivGSZpmncdYrqS8u/pub?gid=1860627752&single=true&output=csv";
+
+// ADMIN LOGIN
+const ADMIN_USERNAME = "phiman";
+const PASSWORD = "psp1990";
+
+// ================= MODE SWITCH =================
+const isDJ = new URLSearchParams(location.search).get("dj") === "1";
+
+if (isDJ) {
+  document.getElementById("audience").classList.add("hidden");
+  document.getElementById("dj").classList.remove("hidden");
+}
+
+// ================= SUBMIT REQUEST =================
+function submitRequest() {
+  const name = document.getElementById("name").value;
+  const song = document.getElementById("song").value;
+  const artist = document.getElementById("artist").value;
+
+  fetch(FORM_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: new URLSearchParams({
+      [ENTRY_NAME]: name,
+      [ENTRY_SONG]: song,
+      [ENTRY_ARTIST]: artist
+    })
+  });
+
+  alert("Request sent!");
+
+  document.getElementById("name").value = "";
+  document.getElementById("song").value = "";
+  document.getElementById("artist").value = "";
+}
+
+// ================= LOAD DJ REQUESTS =================
+async function loadRequests() {
+  if (!isDJ) return;
+
+  try {
+    const res = await fetch(SHEET_CSV);
+    const text = await res.text();
+    const rows = text.split("\n").slice(1);
+
+    document.getElementById("requests").innerHTML =
+      rows.reverse().map(r => {
+        const c = r.split(",");
+        return `
+          <div class="req">
+            <b>${c[2] || ""}</b> - ${c[3] || ""}
+            <br><span class="small">${c[1] || ""}</span>
+          </div>
+        `;
+      }).join("");
+
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+setInterval(loadRequests, 5000);
+loadRequests();
+
+// ================= LOGIN =================
+function login() {
+  const user = document.getElementById("user").value;
+  const pass = document.getElementById("pass").value;
+
+  if (user === ADMIN_USERNAME && pass === PASSWORD) {
+    location.href = "?dj=1";
+  } else {
+    alert("Wrong username or password");
+  }
+}
+
+// ================= QR CODE =================
+QRCode.toCanvas(
+  document.getElementById("qr"),
+  location.origin + location.pathname
+);
+
+</script>
+
 </body>
 </html>
