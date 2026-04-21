@@ -16,10 +16,10 @@ body {
 }
 
 header {
-  padding: 15px;
+  padding: 8px;
   text-align: center;
   background: linear-gradient(90deg,#111,#555);
-  font-size: 20px;
+  font-size: 16px;
   letter-spacing: 1px;
 }
 
@@ -34,10 +34,16 @@ header {
   margin-bottom: 15px;
 }
 
+/* CENTER FORM */
+.form-box {
+  max-width: 420px;
+  margin: 0 auto;
+}
+
 input, button {
   width: 100%;
   padding: 12px;
-  margin: 6px 0;
+  margin: 8px 0;
   border: none;
   border-radius: 6px;
   font-size: 16px;
@@ -46,6 +52,7 @@ input, button {
 input {
   background: #222;
   color: #fff;
+  text-align: center;
 }
 
 button {
@@ -71,7 +78,7 @@ button:hover {
   opacity: 0.7;
 }
 
-/* CENTER QR + TEXT */
+/* QR CENTER */
 .qr-card {
   text-align: center;
 }
@@ -83,7 +90,12 @@ button:hover {
 
 .qr-text {
   text-align: center;
-  margin-top: 10px;
+  margin-top: 15px;
+}
+
+/* spacing between QR text and button */
+.spacer {
+  margin-top: 25px;
 }
 
 .bottom-btn {
@@ -91,6 +103,7 @@ button:hover {
   color: #fff;
   border: 1px solid #555;
   font-size: 16px;
+  margin-top: 15px;
 }
 
 .bottom-link {
@@ -103,6 +116,14 @@ button:hover {
   color: silver;
   text-decoration: underline;
 }
+
+footer {
+  text-align: center;
+  font-size: 12px;
+  opacity: 0.7;
+  padding: 20px;
+}
+
 </style>
 </head>
 
@@ -113,8 +134,8 @@ button:hover {
 <!-- ================= AUDIENCE ================= -->
 <div id="audience" class="container">
 
-  <div class="card">
-    <h2>📱 Request a Song</h2>
+  <div class="card form-box">
+    <h2 style="text-align:center;">📱 Request a Song</h2>
     <input id="name" placeholder="Your Name" />
     <input id="song" placeholder="Song Name" />
     <input id="artist" placeholder="Artist Name" />
@@ -125,6 +146,8 @@ button:hover {
     <h3>Share this QR with the crowd</h3>
     <canvas id="qr"></canvas>
     <p class="qr-text small">Request a Song</p>
+
+    <div class="spacer"></div>
 
     <button class="bottom-btn" onclick="window.open('https://linktr.ee/prodigalpi','_blank')">
       Prodigal Pi
@@ -147,7 +170,7 @@ button:hover {
 
   <div class="card" id="requests"></div>
 
-  <div class="card">
+  <div class="card form-box">
     <h3>🔐 Admin Login</h3>
     <input id="user" placeholder="Username" />
     <input id="pass" type="password" placeholder="Password" />
@@ -155,6 +178,10 @@ button:hover {
   </div>
 
 </div>
+
+<footer>
+© 2026 Psi Sigma Phi Multicultural Fraternity, Inc. | Multicultural by birth, not by choice. | Breaking social fears and ignorance.
+</footer>
 
 <script>
 
