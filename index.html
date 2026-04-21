@@ -40,9 +40,7 @@ header {
   100% { transform: translateX(-50%); }
 }
 
-.container {
-  padding: 20px;
-}
+.container { padding: 20px; }
 
 .card {
   background: #111;
@@ -78,90 +76,97 @@ button {
   font-size: 16px;
 }
 
-button:hover {
-  background: #ccc;
-}
+button:hover { background:#ccc; }
 
-.hidden { display: none; }
+.hidden { display:none; }
 
 .req {
   border-bottom: 1px solid #333;
   padding: 8px 0;
 }
 
-.small {
-  font-size: 12px;
-  opacity: 0.7;
-}
+.small { font-size:12px; opacity:0.7; }
 
 .qr-card {
-  text-align: center;
+  text-align:center;
 }
 
-.qr-card canvas {
-  display: block;
-  margin: 0 auto;
+/* 🎧 QR DJ FRAME */
+.qr-frame {
+  display:inline-block;
+  padding:18px;
+  border-radius:18px;
+  position:relative;
+  box-shadow: 0 0 18px rgba(192,192,192,0.25);
+  border: 2px solid rgba(192,192,192,0.4);
 }
+
+.qr-frame canvas {
+  display:block;
+  margin:0 auto;
+}
+
+/* silver corner eyes */
+.qr-frame:before,
+.qr-frame:after {
+  content:"";
+  position:absolute;
+  width:14px;
+  height:14px;
+  border-radius:50%;
+  background: radial-gradient(circle,#e6e6e6,#9a9a9a);
+  box-shadow:0 0 8px rgba(255,255,255,0.3);
+}
+
+.qr-frame:before { top:6px; left:6px; }
+.qr-frame:after { bottom:6px; right:6px; }
 
 .qr-text {
-  text-align: center;
-  margin-top: 15px;
+  text-align:center;
+  margin-top:15px;
 }
 
-.spacer {
-  margin-top: 25px;
-}
+.spacer { margin-top:25px; }
 
 .bottom-btn {
-  background: #000;
-  color: #fff;
-  border: 1px solid #555;
-  font-size: 16px;
-  margin-top: 15px;
+  background:#000;
+  color:#fff;
+  border:1px solid #555;
+  font-size:16px;
+  margin-top:15px;
 }
 
 .bottom-link {
-  text-align: center;
-  font-size: 14px;
-  margin-top: 10px;
+  text-align:center;
+  font-size:14px;
+  margin-top:10px;
 }
 
-.bottom-link a {
-  color: silver;
-  text-decoration: underline;
-}
+.bottom-link a { color:silver; }
 
 footer {
-  text-align: center;
-  font-size: 12px;
-  opacity: 0.7;
-  padding: 20px;
+  text-align:center;
+  font-size:12px;
+  opacity:0.7;
+  padding:20px;
 }
 
-/* DJ LOGIN BUTTON */
+/* DJ LOGIN BUTTON MOVED RIGHT + SMALLER */
 .dj-login-btn {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: #0b3d0b;
-  color: #ffb6c1;
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-size: 12px;
-  border: none;
-  cursor: pointer;
-  width: auto;
+  position:absolute;
+  top:10px;
+  right:10px;
+  background:#0b3d0b;
+  color:#ffb6c1;
+  padding:5px 8px;
+  border-radius:6px;
+  font-size:11px;
+  border:none;
+  cursor:pointer;
+  width:auto;
 }
 
-.dj-login-btn:hover {
-  background: #145214;
-}
-
-/* LOGIN PAGE */
-#loginPage {
-  padding: 20px;
-  text-align: center;
-}
+.dj-login-btn:hover { background:#145214; }
 
 </style>
 </head>
@@ -176,15 +181,11 @@ footer {
     <span> - SHOW US YOUR MOVES! - </span>
     <span> 🎧 PSP DJ REQUEST SYSTEM</span>
     <span> - WELCOME TO 2026 FIELD DAY - </span>
-    <span> - PSP x AKA - </span>
-    <span> - SHOW US YOUR MOVES! - </span>
   </div>
 </header>
 
-<!-- ================= AUDIENCE ================= -->
 <div id="audience" class="container" style="position:relative;">
 
-  <!-- DJ LOGIN BUTTON -->
   <button class="dj-login-btn" onclick="showLogin()">DJ Login</button>
 
   <div class="card form-box">
@@ -197,7 +198,11 @@ footer {
 
   <div class="card qr-card">
     <h3>Share this QR with the crowd</h3>
-    <canvas id="qr"></canvas>
+
+    <div class="qr-frame">
+      <canvas id="qr"></canvas>
+    </div>
+
     <p class="qr-text small">Request a Song</p>
 
     <div class="spacer"></div>
@@ -214,27 +219,12 @@ footer {
 
 </div>
 
-<!-- ================= LOGIN PAGE ================= -->
-<div id="loginPage" class="hidden">
-  <div class="card form-box">
-    <h2>DJ LOGIN</h2>
-    <input id="loginUser" placeholder="Username" />
-    <input id="loginPass" type="password" placeholder="Password" />
-    <button onclick="login()">Enter DJ Mode</button>
-    <button onclick="back()" style="background:#333;color:#fff;">Back</button>
-  </div>
-</div>
-
-<!-- ================= DJ PANEL ================= -->
 <div id="dj" class="container hidden">
-
   <div class="card">
     <h2>DJ CONTROL PANEL</h2>
     <p class="small">Live requests (auto-refresh)</p>
   </div>
-
   <div class="card" id="requests"></div>
-
 </div>
 
 <footer>
@@ -242,85 +232,34 @@ footer {
 </footer>
 
 <script>
+const FORM_URL="https://docs.google.com/forms/d/e/1FAIpQLSd4bfk_BerdFJTVVjTnk-37HiuclYg3ZafMrzFrBzayk1Ka_A/formResponse";
+const ENTRY_NAME="entry.2025816728";
+const ENTRY_SONG="entry.217433513";
+const ENTRY_ARTIST="entry.414315518";
+const SHEET_CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vRnd93SzUSWVaYgaZMtDTu1Zc8GknVU_jHTXd7K6v5EDOrK_VVzJ21Y-8HQxj7wivGSZpmncdYrqS8u/pub?gid=1860627752&single=true&output=csv";
+const ADMIN_USERNAME="phiman";
+const PASSWORD="psp1990";
 
-const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSd4bfk_BerdFJTVVjTnk-37HiuclYg3ZafMrzFrBzayk1Ka_A/formResponse";
-const ENTRY_NAME = "entry.2025816728";
-const ENTRY_SONG = "entry.217433513";
-const ENTRY_ARTIST = "entry.414315518";
-
-const SHEET_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRnd93SzUSWVaYgaZMtDTu1Zc8GknVU_jHTXd7K6v5EDOrK_VVzJ21Y-8HQxj7wivGSZpmncdYrqS8u/pub?gid=1860627752&single=true&output=csv";
-
-const ADMIN_USERNAME = "phiman";
-const PASSWORD = "psp1990";
-
-const isDJ = new URLSearchParams(location.search).get("dj") === "1";
-
-if (isDJ) {
+const isDJ=new URLSearchParams(location.search).get("dj")==="1";
+if(isDJ){
   document.getElementById("audience").classList.add("hidden");
   document.getElementById("dj").classList.remove("hidden");
 }
 
-function showLogin() {
-  document.getElementById("audience").classList.add("hidden");
-  document.getElementById("loginPage").classList.remove("hidden");
+function showLogin(){
+  location.href="#login";
+  const u=prompt("Username");
+  const p=prompt("Password");
+  if(u===ADMIN_USERNAME && p===PASSWORD){ location.href="?dj=1"; }
+  else alert("Wrong credentials");
 }
 
-function back() {
-  document.getElementById("loginPage").classList.add("hidden");
-  document.getElementById("audience").classList.remove("hidden");
-}
-
-function login() {
-  const user = document.getElementById("loginUser").value;
-  const pass = document.getElementById("loginPass").value;
-
-  if (user === ADMIN_USERNAME && pass === PASSWORD) {
-    location.href = "?dj=1";
-  } else {
-    alert("Wrong username or password");
-  }
-}
-
-function submitRequest() {
-  const name = document.getElementById("name").value;
-  const song = document.getElementById("song").value;
-  const artist = document.getElementById("artist").value;
-
-  fetch(FORM_URL, {
-    method: "POST",
-    mode: "no-cors",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({
-      [ENTRY_NAME]: name,
-      [ENTRY_SONG]: song,
-      [ENTRY_ARTIST]: artist
-    })
-  });
-
+function submitRequest(){
+  fetch(FORM_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:new URLSearchParams({[ENTRY_NAME]:name.value,[ENTRY_SONG]:song.value,[ENTRY_ARTIST]:artist.value})});
   alert("Request sent!");
 }
 
-async function loadRequests() {
-  if (!isDJ) return;
-
-  const res = await fetch(SHEET_CSV);
-  const text = await res.text();
-  const rows = text.split("\n").slice(1);
-
-  document.getElementById("requests").innerHTML = rows.reverse().map(r => {
-    const c = r.split(",");
-    return `<div class='req'><b>${c[2] || ""}</b> - ${c[3] || ""}<br><span class='small'>${c[1] || ""}</span></div>`;
-  }).join("");
-}
-
-setInterval(loadRequests, 5000);
-loadRequests();
-
-QRCode.toCanvas(
-  document.getElementById("qr"),
-  location.origin + location.pathname
-);
-
+QRCode.toCanvas(document.getElementById("qr"),location.href);
 </script>
 
 </body>
