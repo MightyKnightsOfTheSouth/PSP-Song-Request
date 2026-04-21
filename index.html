@@ -125,14 +125,8 @@ footer {
 
 <body>
 
-<!-- ================= BANNER ================= -->
 <header>
   <div class="marquee">
-    <span>🎧 PSP DJ REQUEST SYSTEM 🎧</span>
-    <span>— WELCOME TO 2026 FIELD DAY —</span>
-    <span>— PSP x AKA —</span>
-    <span>— SHOW US YOUR MOVES —</span>
-
     <span>🎧 PSP DJ REQUEST SYSTEM 🎧</span>
     <span>— WELCOME TO 2026 FIELD DAY —</span>
     <span>— PSP x AKA —</span>
@@ -140,10 +134,7 @@ footer {
   </div>
 </header>
 
-<!-- ================= AUDIENCE ================= -->
-<div id="audience" class="container" style="position:relative;">
-
-  <button class="dj-login-btn" onclick="showLogin()">DJ Login</button>
+<div id="audience" class="container">
 
   <div class="card form-box">
     <h2 style="text-align:center;">📱 Request a Song</h2>
@@ -163,43 +154,22 @@ footer {
     </div>
 
     <p class="small">Request a Song</p>
-
-    <div style="margin-top:25px;">
-      <button onclick="window.open('https://linktr.ee/prodigalpi','_blank')"
-        style="background:#000;color:#fff;border:1px solid #666;">
-        Learn more about the Prodigal Pi Chapter
-      </button>
-    </div>
-
-    <p class="small" style="margin-top:15px;">
-      Want to join Psi Sigma Phi Multicultural Fraternity, Inc.?
-    </p>
-
-    <p class="small">
-      Click <a href="https://www.tinyurl.com/ProdigalPiInterest"
-      target="_blank" style="color:silver;">here</a> and we will be in touch!
-    </p>
-
   </div>
+
 </div>
 
-<!-- ================= DJ PANEL ================= -->
 <div id="dj" class="container hidden">
 
   <div class="card">
     <h2>DJ CONTROL PANEL</h2>
     <p class="small">Live requests (auto-refresh)</p>
-
-    <button onclick="goBack()" style="background:silver;color:black;width:auto;">
-      ⬅ Back to Request Page
-    </button>
   </div>
 
   <div class="card" id="requests">Loading...</div>
 </div>
 
 <footer>
-© 2026 Psi Sigma Phi Multicultural Fraternity, Inc. | Multicultural by birth, not by choice. | Breaking social fears and ignorance.
+© 2026 PSP DJ System
 </footer>
 
 <script>
@@ -212,9 +182,6 @@ const ENTRY_ARTIST = "entry.414315518";
 
 const SHEET_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRnd93SzUSWVaYgaZMtDTu1Zc8GknVU_jHTXd7K6v5EDOrK_VVzJ21Y-8HQxj7wivGSZpmncdYrqS8u/pub?gid=1860627752&single=true&output=csv";
 
-const ADMIN_USERNAME = "phiman";
-const PASSWORD = "psp1990";
-
 const isDJ = new URLSearchParams(location.search).get("dj") === "1";
 
 if (isDJ) {
@@ -224,62 +191,46 @@ if (isDJ) {
   setInterval(loadRequests, 5000);
 }
 
-/* LOGIN (FIXED + CASE INSENSITIVE) */
-function showLogin() {
-  const u = prompt("Username");
-  const p = prompt("Password");
-
-  if (!u || !p) return;
-
-  const inputUser = u.toLowerCase().trim();
-  const inputPass = p.toLowerCase().trim();
-
-  const correctUser = ADMIN_USERNAME.toLowerCase();
-  const correctPass = PASSWORD.toLowerCase();
-
-  if (inputUser === correctUser && inputPass === correctPass) {
-    location.href = "?dj=1";
-  } else {
-    alert("Wrong credentials");
-  }
-}
-
-/* BACK */
-function goBack() {
-  window.location.href = window.location.pathname;
-}
-
 /* SUBMIT */
 function submitRequest() {
-  const name = document.getElementById("name");
-  const song = document.getElementById("song");
-  const artist = document.getElementById("artist");
+  const name = document.getElementById("name").value;
+  const song = document.getElementById("song").value;
+  const artist = document.getElementById("artist").value;
 
   fetch(FORM_URL, {
     method: "POST",
     mode: "no-cors",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({
-      [ENTRY_NAME]: name.value,
-      [ENTRY_SONG]: song.value,
-      [ENTRY_ARTIST]: artist.value
+      [ENTRY_NAME]: name,
+      [ENTRY_SONG]: song,
+      [ENTRY_ARTIST]: artist
     })
   });
 
   alert("Request sent!");
 }
 
-/* LOAD REQUESTS */
+/* FIXED STABLE LOADER */
 async function loadRequests() {
   try {
-    const res = await fetch(SHEET_CSV, { cache: "no-store" });
+    const res = await fetch(SHEET_CSV + "&t=" + Date.now(), {
+      cache: "no-store"
+    });
+
     const text = await res.text();
 
-    const rows = text.split(/\r?\n/).filter(r => r.trim() !== "");
-    const dataRows = rows.slice(1);
+    const lines = text
+      .split(/\r?\n/)
+      .map(l => l.trim())
+      .filter(l => l.length > 0);
 
-    document.getElementById("requests").innerHTML =
-      dataRows.reverse().map(row => {
+    if (lines.length <= 1) return;
+
+    const dataRows = lines.slice(1);
+
+    const html = dataRows
+      .filter(r => r.includes(",")) // prevent broken rows
+      .map(row => {
         const c = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
 
         return `
@@ -288,10 +239,15 @@ async function loadRequests() {
             <span class="small">${c[1] || ""}</span>
           </div>
         `;
-      }).join("") || "No requests yet";
+      })
+      .join("");
+
+    document.getElementById("requests").innerHTML =
+      html || "No requests yet";
 
   } catch (e) {
-    document.getElementById("requests").innerHTML = "Error loading requests";
+    document.getElementById("requests").innerHTML =
+      "Error loading requests";
   }
 }
 
