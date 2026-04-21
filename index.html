@@ -29,10 +29,6 @@ header {
   animation: scroll 30s linear infinite;
 }
 
-.marquee span {
-  margin-right: 40px;
-}
-
 @keyframes scroll {
   0% { transform: translateX(0%); }
   100% { transform: translateX(-50%); }
@@ -127,11 +123,7 @@ footer {
 
 <header>
   <div class="marquee">
-    <span>🎧 PSP DJ REQUEST SYSTEM</span>
-    <span>- WELCOME TO 2026 FIELD DAY -</span>
-    <span>- PSP x AKA -</span>
-    <span>- SHOW US YOUR MOVES -</span>
-    <span>🎧 PSP DJ REQUEST SYSTEM</span>
+    🎧 PSP DJ REQUEST SYSTEM — WELCOME TO 2026 FIELD DAY — PSP x AKA — SHOW US YOUR MOVES — 🎧
   </div>
 </header>
 
@@ -200,6 +192,7 @@ if (isDJ) {
   setInterval(loadRequests, 5000);
 }
 
+/* LOGIN */
 function showLogin() {
   const u = prompt("Username");
   const p = prompt("Password");
@@ -211,6 +204,7 @@ function showLogin() {
   }
 }
 
+/* SUBMIT */
 function submitRequest() {
   const name = document.getElementById("name");
   const song = document.getElementById("song");
@@ -219,7 +213,9 @@ function submitRequest() {
   fetch(FORM_URL, {
     method: "POST",
     mode: "no-cors",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
     body: new URLSearchParams({
       [ENTRY_NAME]: name.value,
       [ENTRY_SONG]: song.value,
@@ -230,28 +226,46 @@ function submitRequest() {
   alert("Request sent!");
 }
 
+/* 🔥 FIXED LIVE REQUEST LOADER (NO CACHE + NO GHOST DATA) */
 async function loadRequests() {
   try {
-    const res = await fetch(SHEET_CSV);
-    const text = await res.text();
-    const rows = text.split("\n").slice(1);
+    const res = await fetch(SHEET_CSV, {
+      cache: "no-store"   // 🔥 THIS FIXES YOUR ISSUE
+    });
 
-    document.getElementById("requests").innerHTML =
-      rows.reverse().map(r => {
-        const c = r.split(",");
-        return `
-          <div class="req">
-            <b>${c[2] || ""}</b> - ${c[3] || ""}<br>
-            <span class="small">${c[1] || ""}</span>
-          </div>
-        `;
-      }).join("");
+    const text = await res.text();
+
+    if (!text || text.trim() === "") {
+      document.getElementById("requests").innerHTML = "No requests yet";
+      return;
+    }
+
+    const rows = text.split(/\r?\n/).filter(r => r.trim() !== "");
+    const dataRows = rows.slice(1);
+
+    const html = dataRows.reverse().map(row => {
+      const c = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+
+      const name = c[1] || "Unknown";
+      const song = c[2] || "No Song";
+      const artist = c[3] || "No Artist";
+
+      return `
+        <div class="req">
+          <b>${song}</b> - ${artist}<br>
+          <span class="small">${name}</span>
+        </div>
+      `;
+    }).join("");
+
+    document.getElementById("requests").innerHTML = html;
 
   } catch (e) {
-    document.getElementById("requests").innerHTML = "Failed to load requests";
+    document.getElementById("requests").innerHTML = "Error loading requests";
   }
 }
 
+/* QR */
 QRCode.toCanvas(
   document.getElementById("qr"),
   location.href
