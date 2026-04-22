@@ -4,7 +4,9 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>PSP DJ Song Request System</title>
-
+  
+<link id="favicon" rel="icon" type="image/png" href="MIB.PNG">
+  
 <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 
 <style>
@@ -208,8 +210,17 @@ const PASSWORD = "psp1990";
 
 const isDJ = new URLSearchParams(location.search).get("dj") === "1";
 
-let knownRequests = new Set();
+window.addEventListener("DOMContentLoaded", () => {
+  const favicon = document.getElementById("favicon");
 
+  if (isDJ) {
+    favicon.href = "Ten%20Star.PNG";
+    document.title = "🔴 LIVE DJ PANEL • Requests";
+  } else {
+    favicon.href = "MIB.PNG";
+  }
+});
+let knownRequests = new Set();
 if (isDJ) {
   document.getElementById("audience").classList.add("hidden");
   document.getElementById("dj").classList.remove("hidden");
