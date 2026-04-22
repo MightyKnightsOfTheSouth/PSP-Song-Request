@@ -146,7 +146,7 @@ footer {
   <button class="dj-login-btn" onclick="showLogin()">DJ Login</button>
 
   <div class="card form-box">
-    <h2 style="text-align:center;">📱 Request a Song</h2>
+    <h2 style="text-align:center;🎶 Request a Song 🎶</h2>
 
     <input id="name" placeholder="Your Name" />
     <input id="song" placeholder="Song Name" />
@@ -187,7 +187,7 @@ footer {
 <div id="dj" class="container hidden">
 
   <div class="card">
-    <h2>DJ CONTROL PANEL</h2>
+    <h2>🎛️ DJ CONTROL PANEL 🎛️</h2>
     <p class="small">Live requests (auto-refresh)</p>
 
     <button onclick="goBack()" style="background:silver;color:black;width:auto;">
@@ -266,6 +266,14 @@ function submitRequest() {
   });
 
   alert("Request sent!");
+
+  // ✅ CLEAR INPUTS
+  document.getElementById("name").value = "";
+  document.getElementById("song").value = "";
+  document.getElementById("artist").value = "";
+
+  // ✅ PUT CURSOR BACK IN FIRST BOX
+  document.getElementById("name").focus();
 }
 
 /* ===== LEVEL 2 FIXED LOADER ===== */
@@ -282,7 +290,7 @@ async function loadRequests() {
       .map(l => l.trim())
       .filter(l => l);
 
-    const dataRows = lines.slice(1);
+    const dataRows = lines.slice(1).reverse();
 
     let newHTML = "";
     let newSet = new Set();
