@@ -15,7 +15,6 @@ body {
   color: #fff;
 }
 
-/* ================= HEADER ================= */
 header {
   background: linear-gradient(90deg,#111,#555);
   overflow: hidden;
@@ -40,7 +39,6 @@ header {
   100% { transform: translateX(-50%); }
 }
 
-/* ================= LAYOUT ================= */
 .container { padding: 20px; }
 
 .card {
@@ -99,7 +97,6 @@ button:hover { background:#ccc; }
 
 .small { font-size:12px; opacity:0.7; }
 
-/* ================= QR ================= */
 .qr-card { text-align:center; }
 
 .qr-frame {
@@ -111,7 +108,6 @@ button:hover { background:#ccc; }
   background: linear-gradient(145deg,#2a2a2a,#111);
 }
 
-/* ================= FOOTER ================= */
 footer {
   text-align:center;
   font-size:12px;
@@ -120,7 +116,6 @@ footer {
 }
 
 .hidden { display:none; }
-
 </style>
 </head>
 
@@ -140,13 +135,12 @@ footer {
   </div>
 </header>
 
-<!-- ================= AUDIENCE ================= -->
 <div id="audience" class="container" style="position:relative;">
 
   <button class="dj-login-btn" onclick="showLogin()">DJ Login</button>
 
   <div class="card form-box">
-    <h2 style="text-align:center;🎶 Request a Song 🎶</h2>
+    <h2 style="text-align:center;">🎶 Request a Song 🎶</h2>
 
     <input id="name" placeholder="Your Name" />
     <input id="song" placeholder="Song Name" />
@@ -179,15 +173,12 @@ footer {
       Click <a href="https://www.tinyurl.com/ProdigalPiInterest"
       target="_blank" style="color:silver;">here</a> and we will be in touch!
     </p>
-
   </div>
 </div>
 
-<!-- ================= DJ PANEL ================= -->
 <div id="dj" class="container hidden">
-
   <div class="card">
-    <h2>🎛️ DJ CONTROL PANEL 🎛️</h2>
+    <h2>DJ CONTROL PANEL</h2>
     <p class="small">Live requests (auto-refresh)</p>
 
     <button onclick="goBack()" style="background:silver;color:black;width:auto;">
@@ -199,7 +190,7 @@ footer {
 </div>
 
 <footer>
-© 2026 Psi Sigma Phi Multicultural Fraternity, Inc. | Multicultural by birth, not by choice. | Breaking social fears and ignorance.
+© 2026 Psi Sigma Phi Multicultural Fraternity, Inc.
 </footer>
 
 <script>
@@ -217,7 +208,6 @@ const PASSWORD = "psp1990";
 
 const isDJ = new URLSearchParams(location.search).get("dj") === "1";
 
-/* ===== LEVEL 2 STABILITY ENGINE ===== */
 let knownRequests = new Set();
 
 if (isDJ) {
@@ -227,7 +217,6 @@ if (isDJ) {
   setInterval(loadRequests, 5000);
 }
 
-/* LOGIN */
 function showLogin() {
   const u = prompt("Username");
   const p = prompt("Password");
@@ -244,12 +233,10 @@ function showLogin() {
   }
 }
 
-/* BACK */
 function goBack() {
   window.location.href = window.location.pathname;
 }
 
-/* SUBMIT */
 function submitRequest() {
   const name = document.getElementById("name").value;
   const song = document.getElementById("song").value;
@@ -266,9 +253,12 @@ function submitRequest() {
   });
 
   alert("Request sent!");
+
+  document.getElementById("name").value = "";
+  document.getElementById("song").value = "";
+  document.getElementById("artist").value = "";
 }
 
-/* ===== LEVEL 2 FIXED LOADER ===== */
 async function loadRequests() {
   try {
     const res = await fetch(SHEET_CSV + "&t=" + Date.now(), {
@@ -315,7 +305,6 @@ async function loadRequests() {
   }
 }
 
-/* QR */
 QRCode.toCanvas(
   document.getElementById("qr"),
   location.href
@@ -325,7 +314,3 @@ QRCode.toCanvas(
 
 </body>
 </html>
-
-
-
-
